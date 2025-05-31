@@ -1,5 +1,4 @@
 import os
-import json
 from pathlib import Path
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -51,7 +50,8 @@ class GoogleDriveHelper:
                 if isinstance(client_config, dict) \
                 else InstalledAppFlow.from_client_secrets_file(client_config, SCOPES)
 
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_console()
+
             with open(self.token_path, "w") as token_file:
                 token_file.write(creds.to_json())
 
