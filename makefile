@@ -8,7 +8,7 @@ PYTHON := python3
 REQUIREMENTS := requirements.txt
 TOP_LEVEL_PACKAGES := cryptography google-api-python-client google-auth google-auth-oauthlib mypy pyyaml types-PyYAML
 
-.PHONY: activate all auth clean cloud2enc enc2cloud enc2yaml env2yaml freeze gcloud info install-gcloud set-project setup test yaml2enc yaml2env
+.PHONY: activate all auth clean cloud2enc enc2cloud enc2yaml env2yaml freeze gcloud info install-gcloud list set-project setup test yaml2enc yaml2env
 
 .DEFAULT_GOAL := all
 
@@ -90,6 +90,9 @@ install-gcloud:
 	sudo apt-get update -y && \
 	sudo apt-get install -y google-cloud-sdk
 
+list:
+	@$(VENV_DIR)/bin/python -m main list
+
 # Set active project
 set-project:
 	@echo "Setting project to: $(GOOGLE_PROJECT_ID)"
@@ -114,7 +117,8 @@ endif
 
 test:
 	@echo "Running tests..."
-	@$(MAKE) env2yaml && \
+	@$(MAKE) list && \
+	$(MAKE) env2yaml && \
 	$(MAKE) yaml2enc && \
 	$(MAKE) enc2yaml && \
 	$(MAKE) yaml2env
