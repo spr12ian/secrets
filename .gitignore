@@ -1,3 +1,5 @@
+# JSON extensions
+*.json
 # YAML extensions
 *.yaml
 

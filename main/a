@@ -1,0 +1,73 @@
+yourproject/
+├── main/
+│   ├── __init__.py
+│   ├── __main__.py        # Entry point when run via `python -m main`
+│   ├── config.py
+│   └── classes/
+│       ├── __init__.py
+│       ├── encryption_helper.py
+│       └── google_drive_helper.py
+│       └── yaml_helper.py
+│   └── commands/
+│       ├── __init__.py
+│       ├── env2yaml.py
+│       ├── yaml2enc.py
+│       ├── enc2yaml.py
+│       └── yaml2env.py
+└── config.yaml
+
+env2yaml.py contains:
+from cls_helper_yaml import YamlHelper
+import os
+
+def main(args):
+    print("🔄 Running env2yaml...")
+    print("Arguments:", args)
+    # Real logic would go here
+    env_file = YamlHelper(YAML_ENV_FILE)
+    env_file.write(dict(os.environ))
+
+cls_helper_yaml.py contains:
+from cls_helper_encryption import EncryptionHelper
+from pathlib import Path
+from typing import Optional
+import yaml
+
+
+class YamlHelper:
+    def __init__(self, file_path: Path):
+        match file_path.suffix:
+            case ".enc":
+                self.encrypted = True
+            case ".yaml":
+                self.encrypted = False
+            case _:
+                raise ValueError(f"File {file_path} is not a [encrypted] YAML file.")
+        self.file_path = file_path
+
+    def read(self, passphrase: Optional[str] = None) -> dict:
+        if not self.file_path.exists():
+            raise FileNotFoundError(f"{self.file_path} not found.")
+
+        if self.encrypted:
+            encrypted_bytes = self.file_path.read_bytes()
+            plaintext = EncryptionHelper.decrypt(encrypted_bytes, passphrase)
+            return yaml.safe_load(plaintext) or {}
+        else:
+            return yaml.safe_load(self.file_path.read_text(encoding="utf-8")) or {}
+
+    def write(self, data: dict, passphrase: Optional[str] = None):
+        yaml_text = yaml.dump(data, default_flow_style=False).encode("utf-8")
+
+        if self.encrypted:
+            encrypted_bytes = EncryptionHelper.encrypt(yaml_text, passphrase)
+            self.file_path.write_bytes(encrypted_bytes)
+        else:
+            self.file_path.write_text(yaml_text.decode("utf-8"), encoding="utf-8")
+
+        print(f"Data written to {self.file_path}")
+
+in env2yaml.py:
+mypy cannot find the definition of YamlHelper, which is defined in cls_helper_yaml.py.
+# To resolve this, we need to ensure that the import statement is correct.
+# Ensure the import statement is correct

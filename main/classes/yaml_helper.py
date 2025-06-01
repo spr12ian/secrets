@@ -1,4 +1,4 @@
-from cls_helper_encryption import EncryptionHelper
+from main.classes.encryption_helper import EncryptionHelper
 from pathlib import Path
 from typing import Optional
 import yaml

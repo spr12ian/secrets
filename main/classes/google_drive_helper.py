@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
-from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build # type: ignore
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload # type: ignore
+from google_auth_oauthlib.flow import InstalledAppFlow # type: ignore
 
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 

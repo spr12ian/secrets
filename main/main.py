@@ -1,14 +1,8 @@
-import base64
 from time import strftime
 from cls_helper_google_drive import GoogleDriveHelper
-from cls_helper_yaml import YamlHelper
-from cryptography.fernet import Fernet
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from main.classes.yaml_helper import YamlHelper
 import os
 import sys
-import getpass
 from pathlib import Path
 
 
@@ -26,28 +20,6 @@ def cloud_to_encrypted():
     # Download and decrypt a file from Google Drive
     drive_sync = GoogleDriveHelper()
     drive_sync.download_file("DRIVE_FILE_ID", VAULT_FILE)
-
-
-def decrypt_encrypted() -> dict:
-    passphrase = getpass.getpass("Passphrase: ")
-    fernet = get_fernet(passphrase)
-    try:
-        plaintext = fernet.decrypt(VAULT_FILE.read_bytes())
-        return yaml.safe_load(plaintext)
-    except Exception as e:
-        print("Decryption failed:", str(e))
-        return {}
-
-
-def derive_key(passphrase: str, salt: bytes) -> bytes:
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=100_000,
-        backend=default_backend(),
-    )
-    return base64.urlsafe_b64encode(kdf.derive(passphrase.encode()))
 
 
 def encrypted_to_cloud():
@@ -72,15 +44,6 @@ def env_to_yaml():
     env_file.write(dict(os.environ))
 
 
-def get_fernet(passphrase: str) -> Fernet:
-    VAULT_DIR.mkdir(parents=True, exist_ok=True)
-    if not SALT_FILE.exists():
-        SALT_FILE.write_bytes(os.urandom(16))
-    salt = SALT_FILE.read_bytes()
-    key = derive_key(passphrase, salt)
-    return Fernet(key)
-
-
 def yaml_to_encrypted():
     env_file = YamlHelper(YAML_ENV_FILE)
     data = env_file.read()
@@ -98,7 +61,9 @@ def yaml_to_env():
         bash_file.write(f"#!/bin/bash\n\n")
         for k, v in secrets.items():
             bash_file.write(f"export {k}={v}\n")
-    print(f"Set {len(secrets)} environment variables by running `source {SETENV_FILE}`.")
+    print(
+        f"Set {len(secrets)} environment variables by running `source {SETENV_FILE}`."
+    )
 
 
 if __name__ == "__main__":
