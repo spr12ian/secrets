@@ -98,3 +98,9 @@ class Config(ConfigNode):
         with open(yaml_path, "r") as f:
             data = yaml.safe_load(f)
         super().__init__(data)
+
+        # Create VAULT_DIR if it is a Path and doesn't exist
+        vault_dir = getattr(self, "VAULT_DIR", None)
+        if isinstance(vault_dir, Path) and not vault_dir.exists():
+            vault_dir.mkdir(parents=True, exist_ok=True)
+
