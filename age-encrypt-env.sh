@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "\$PROJECTS_DIR=${PROJECTS_DIR}"
 REPO_NAME="$1"
 ENV_FILE="$2"
 PUBKEY=$(grep -o 'age1[0-9a-z]*' .age-key.txt)
