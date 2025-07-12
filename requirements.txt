@@ -1,8 +1,0 @@
-# Top-level dev dependencies
-cryptography
-google-api-python-client
-google-auth
-google-auth-oauthlib
-mypy
-pyyaml
-types-PyYAML
