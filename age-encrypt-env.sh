@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "\$PROJECTS_DIR=${PROJECTS_DIR}"
-REPO_NAME="$1"
-ENV_FILE="$2"
-PUBKEY=$(grep -o 'age1[0-9a-z]*' .age-key.txt)
+ENV_FILE="$1"
+REPO_NAME=$(basename "$(dirname "$ENV_FILE")")
 
-if [[ ! -f "$ENV_FILE" ]]; then
-  echo "❌ .env file not found at $ENV_FILE"
+ENCRYPTED_FILE="${REPO_NAME}.env.age"
+
+if [[ ! -f "${KEY_FILE}" ]]; then
+  echo "❌ Missing $KEY_FILE. Run: age-keygen -o .age-key.txt"
   exit 1
 fi
 
-age -r "$PUBKEY" -o "${REPO_NAME}.env.age" "$ENV_FILE"
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "❌ .env file not found: $ENV_FILE"
+  exit 1
+fi
+
+PUBKEY=$(grep -o 'age1[0-9a-z]*' "${KEY_FILE}")
+echo "🔐 Encrypting ${ENV_FILE}"
+age -r "$PUBKEY" -o "${ENCRYPTED_FILE}" "$ENV_FILE"
 echo "✅ Encrypted $ENV_FILE -> ${REPO_NAME}.env.age"
