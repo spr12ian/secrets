@@ -4,7 +4,7 @@ set -euo pipefail
 ENCRYPTED_FILE="$1"
 REPO_NAME=$(basename "$ENCRYPTED_FILE" ".env.age")
 
-ENV_FILE="${PROJECTS_DIR}/${REPO_NAME}/.env"
+ENV_FILE="${GITHUB_PROJECTS_DIR}/${REPO_NAME}/.env"
 
 if [[ ! -f "${KEY_FILE}" ]]; then
   echo "❌ Missing $KEY_FILE. Run: age-keygen -o .age-key.txt"
